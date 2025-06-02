@@ -28,13 +28,22 @@ public class UsuarioServicio implements IServicios<Usuario>{
 
 	@Override
 	public void guardar(Usuario usuarioNuevo) {
+		
 		String email = usuarioNuevo.getNombre().toLowerCase() + "." + usuarioNuevo.getApellidoP().toLowerCase() + "@enucom.com.mx";
-		usuarioNuevo.setCorreo(email);
+		if (!dao.obtenerCorreo(email).isEmpty()) {
+			email = usuarioNuevo.getNombre().toLowerCase() + "." + usuarioNuevo.getApellidoP().toLowerCase() + usuarioNuevo.getApellidoM() + "@enucom.com.mx";
+		}
+		usuarioNuevo.setCorreo(email.toLowerCase());
 		dao.save(usuarioNuevo);
 	}
 
 	@Override
 	public void editar(Usuario usuarioEditar) {
+		String email = usuarioEditar.getNombre().toLowerCase() + "." + usuarioEditar.getApellidoP().toLowerCase() + "@enucom.com.mx";
+		if (!dao.obtenerCorreo(email).isEmpty()) {
+			email = usuarioEditar.getNombre().toLowerCase() + "." + usuarioEditar.getApellidoP().toLowerCase() + usuarioEditar.getApellidoM() + "@enucom.com.mx";
+		}
+		usuarioEditar.setCorreo(email.toLowerCase());
 		dao.save(usuarioEditar);
 	}
 

@@ -67,7 +67,23 @@ public class ControladorUsuario {
 		if(encontrado != null) {
 			mensaje.put("mensaje", "Ya existe un usuario con id " + usuario.getIdUsuario());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
-		} else if(!servicio.obtenerUsuarioPorNombreCompleto(usuario).isEmpty()) {
+		}else if(usuario.getIdUsuario() <= 0) {
+			mensaje.put("mensaje", "ID de usuario " + usuario.getIdUsuario() + " invalido");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getNombre().equals(null) || usuario.getNombre().equals("")) {
+			mensaje.put("mensaje", "El campo 'nombre' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getApellidoP().equals(null) || usuario.getApellidoP().equals("")) {
+			mensaje.put("mensaje", "El campo 'apellido paterno' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getApellidoM().equals(null) || usuario.getApellidoM().equals("")) {
+			mensaje.put("mensaje", "El campo 'apellido materno' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getSexo().equals(null) || usuario.getSexo().equals("")) {
+			mensaje.put("mensaje", "El campo 'sexo' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		}
+		else if(!servicio.obtenerUsuarioPorNombreCompleto(usuario).isEmpty()) {
 			mensaje.put("mensaje", "Ya existe un usuario con el nombre " + usuario.getNombre() + " " + usuario.getApellidoP() + " " + usuario.getApellidoM());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
 		} else if(usuario.getNombre().matches(caracteresEspeciales) || usuario.getApellidoP().matches(caracteresEspeciales) || usuario.getApellidoM().matches(caracteresEspeciales)) {
@@ -105,10 +121,42 @@ public class ControladorUsuario {
 		LocalDate localHoyHace18anios = LocalDate.now().minusYears(18);
 		hoyHace18anios = Date.from(localHoyHace18anios.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		
+		//Usuario encontradoConRolSoloId = encontrado;
+		//encontradoConRolSoloId.getRolId().setPrivilegio("Administrador");
+		
+			
+		
 		if(encontrado == null) {
 			mensaje.put("mensaje", "No existe un usuario con id " + usuario.getIdUsuario());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
-		} else if(usuario.getNombre().equals(encontrado.getNombre()) && usuario.getApellidoP().equals(encontrado.getApellidoP()) && usuario.getApellidoM().equals(encontrado.getApellidoM())) {
+		} else if(encontrado.getNombre().equals(usuario.getNombre()) 
+				&& encontrado.getApellidoP().equals(usuario.getApellidoP()) 
+				&& encontrado.getApellidoM().equals(usuario.getApellidoM())
+				//&& encontrado.getFechaCreacion().equals(usuario.getFechaCreacion())
+				//&& encontrado.getFechaNacimiento().equals(usuario.getFechaNacimiento())
+				&& encontrado.getRolId().getIdRol() == usuario.getRolId().getIdRol()
+				//&& encontrado.getSexo().equals(usuario.getSexo())
+				) {
+			mensaje.put("mensaje", "Nada que actualizar");
+			return ResponseEntity.ok(mensaje);
+		}else if(usuario.getIdUsuario() <= 0) {
+			mensaje.put("mensaje", "ID de usuario " + usuario.getIdUsuario() + " invalido");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getNombre().equals(null) || usuario.getNombre().equals("")) {
+			mensaje.put("mensaje", "El campo 'nombre' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getApellidoP().equals(null) || usuario.getApellidoP().equals("")) {
+			mensaje.put("mensaje", "El campo 'apellido paterno' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getApellidoM().equals(null) || usuario.getApellidoM().equals("")) {
+			mensaje.put("mensaje", "El campo 'apellido materno' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		} else if(usuario.getSexo().equals(null) || usuario.getSexo().equals("")) {
+			mensaje.put("mensaje", "El campo 'sexo' no puede estar vacio");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
+		}
+		
+		else if(usuario.getNombre().equals(encontrado.getNombre()) && usuario.getApellidoP().equals(encontrado.getApellidoP()) && usuario.getApellidoM().equals(encontrado.getApellidoM())) {
 			if(usuario.getFechaNacimiento().after(hoyHace18anios)) {
 				mensaje.put("mensaje", "El usuario debe ser mayor a 18 años");
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
@@ -141,7 +189,7 @@ public class ControladorUsuario {
 				} else {
 					mensaje.put("mensaje", "Usuario " + usuario + " editado exitosamente");
 					usuario.setRolId(rolEncontrado);
-					servicio.guardar(usuario);
+					servicio.editar(usuario);
 					return ResponseEntity.ok(mensaje);
 				}
 			}

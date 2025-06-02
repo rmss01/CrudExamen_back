@@ -15,4 +15,7 @@ public interface UsuarioDao extends JpaRepository<Usuario, Integer>{
 	
 	@Query(value = "SELECT * FROM ROLES WHERE ID_ROL = :idRol", nativeQuery = true)
 	public Rol obtenerRolPorId(int idRol);
+	
+	@Query(value = "SELECT * FROM USUARIOS WHERE UPPER(CORREO) = UPPER(:correo)", nativeQuery = true)
+	public List<Usuario> obtenerCorreo(String correo);
 }
